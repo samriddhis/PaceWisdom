@@ -4,61 +4,43 @@ import {
   Text,
   StyleSheet,
   Dimensions,
+  StatusBar,
   TouchableOpacity,
 } from "react-native";
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 import { Icon } from "react-native-elements";
-import { DrawerActions } from "react-navigation";
 
 export default class HeaderComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      headerTitle: this.props.headerTitle,
-      withBack: this.props.withBack,
-    };
+    this.state={
+      name:""
+    }
   }
+
   _openMenu() {
     navVar.openDrawer();
     //this.state.scope.props.navigation.openDrawer();
   }
-  _closeFilter() {
-    navVar.goBack();
-  }
+
   render() {
     return (
-      <View style={Styles.OuterContainer}>
-        {this.state.withBack ? (
-          <TouchableOpacity
-            onPress={() => this._closeFilter()}
-            style={Styles.IconViewStyle}
-          >
-            <Icon
-              name="arrowleft"
-              type="antdesign"
-              underlayColor="transparent"
-              color="#fff"
-              size={30}
-              underlayColor="transparent"
-            />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() => this._openMenu()}
-            style={Styles.IconViewStyle}
-          >
-            <Icon
-              name="ios-menu"
-              type="ionicon"
-              color="#fff"
-              size={30}
-              underlayColor="transparent"
-            />
-          </TouchableOpacity>
-        )}
-
-        <View style={Styles.TitleViewStyle}>
-          <Text style={Styles.TitleStyle}>{this.state.headerTitle}</Text>
+      <View style={Styles.outerContainer}>
+        <StatusBar backgroundColor="#0966aa" barStyle="light-content" />
+        <TouchableOpacity
+          onPress={() => this._openMenu()}
+          style={Styles.iconViewStyle}
+        >
+          <Icon
+            name="ios-menu"
+            type="ionicon"
+            color="#fff"
+            size={35}
+            underlayColor="transparent"
+          />
+        </TouchableOpacity>
+        <View style={Styles.titleViewStyle}>
+          <Text style={Styles.titleStyle}>Info</Text>
         </View>
       </View>
     );
@@ -66,23 +48,23 @@ export default class HeaderComponent extends React.Component {
 }
 
 const Styles = StyleSheet.create({
-  OuterContainer: {
+  outerContainer: {
     height: 50,
     width: width,
-    backgroundColor: "#33809a",
+    backgroundColor: "#0966aa",
     flexDirection: "row",
     padding: 10,
     elevation: 10,
   },
-  IconViewStyle: {
+  iconViewStyle: {
     flex: 0.1,
   },
-  TitleViewStyle: {
+  titleViewStyle: {
     flex: 0.8,
     justifyContent: "center",
     alignItems: "center",
   },
-  TitleStyle: {
+  titleStyle: {
     fontSize: 22,
     color: "#fff",
   },

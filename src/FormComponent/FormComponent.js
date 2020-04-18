@@ -38,8 +38,8 @@ class FormComponent extends React.Component {
       address: "",
       showLoadMask: false,
       imageUrl: "http://getdrawings.com/free-icon/blank-avatar-icon-75.png",
-      currentLongitude: props.loginDetails.longitude, 
-      currentLatitude: props.loginDetails.latitude, 
+      currentLongitude: props.loginDetails.longitude,
+      currentLatitude: props.loginDetails.latitude,
     };
     navVar = this.props.navigation;
   }
@@ -141,7 +141,6 @@ class FormComponent extends React.Component {
   _fieldValidation() {
     if (
       this.state.firstName == "" ||
-      this.state.location == "" ||
       this.state.email == "" ||
       this.state.age == "" ||
       this.state.mobileNumber == ""
@@ -190,7 +189,7 @@ class FormComponent extends React.Component {
   render() {
     return (
       <View style={styles.OuterContainer}>
-       <HeaderComponent headerTitle={"Info page"} />
+        <HeaderComponent />
         {this.state.showLoadMask ? (
           <Modal
             transparent={true}

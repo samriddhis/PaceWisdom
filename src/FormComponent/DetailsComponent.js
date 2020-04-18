@@ -18,8 +18,16 @@ export default class DetailsComponent extends React.Component {
 
   render() {
     return (
-      <View style={styles.filterContainerStyle}>
-        <HeaderComponent headerTitle="Details Page" withBack={true} />
+      <View style={styles.OuterContainerStyle}>
+       <View style={[styles.headerStyle]}>
+          <Icon
+            color="#fff"
+            name="arrowleft"
+            type="antdesign"
+            underlayColor="transparent"
+            onPress={() => this._backButtonPress()}
+          />
+        </View>
         <View style={styles.DetailsContainerStyle}>
           <View style={styles.UpperContainerStyle}>
             <View style={styles.ImageContainerStyle}>
@@ -61,9 +69,24 @@ export default class DetailsComponent extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  filterContainerStyle: {
+  OuterContainerStyle: {
     flex: 1,
     backgroundColor: "#F6F6F6",
+  },
+  headerStyle: {
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    height: 50,
+    width: width,
+    backgroundColor: "#0966aa",
+    elevation: 20
+  },
+  headerTextStyle: {
+    marginLeft: 10,
+    fontSize: 25,
+    color: "#fff"
   },
   DetailsContainerStyle: {
     flex: 1,

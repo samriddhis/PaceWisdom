@@ -94,7 +94,7 @@ class UserListComponent extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <HeaderComponent headerTitle={"Info page"} />
+        <HeaderComponent />
         {this.state.showLoadMask ? (
           <Modal
             transparent={true}
