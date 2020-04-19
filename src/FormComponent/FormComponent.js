@@ -11,11 +11,13 @@ import {
   Alert,
   ActivityIndicator,
   Modal,
+  PermissionsAndroid,
 } from "react-native";
 const { height, width } = Dimensions.get("window");
 import { connect } from "react-redux";
 import HeaderComponent from "./HeaderComponent";
 import ImagePicker from "react-native-image-picker";
+import Geolocation from "@react-native-community/geolocation";
 import { Icon } from "react-native-elements";
 
 const options = {
@@ -38,14 +40,10 @@ class FormComponent extends React.Component {
       address: "",
       showLoadMask: false,
       imageUrl: "http://getdrawings.com/free-icon/blank-avatar-icon-75.png",
-      currentLatitude: props.loginDetails.latitude,
-      currentLongitude: props.loginDetails.longitude,
+      currentLatitude: 0, //props.loginDetails.latitude,
+      currentLongitude: 0, //props.loginDetails.longitude,
     };
     navVar = this.props.navigation;
-  }
-
-  componentDidMount() {
-    this._generateLocation();
   }
 
   _generateLocation = async function() {
@@ -57,7 +55,7 @@ class FormComponent extends React.Component {
       latlng +
       ".json?access_token=pk.eyJ1IjoicmFrZWVyYWtlc2giLCJhIjoiY2phMHpvOGlsOGoydjMzb3JiNDd4dXRrYiJ9.f10Am4y4NC81Fn9jCBA0Tw";
     try {
-      var resp = await this._getCurrentLocation();
+      var resp = await this._getCurrentLocation(url);
       this.setState({
         address: resp.features[1].place_name,
         location:
@@ -72,7 +70,7 @@ class FormComponent extends React.Component {
     }
   };
 
-  _getCurrentLocation = function() {
+  _getCurrentLocation = function(url) {
     return new Promise(function(resolve, reject) {
       try {
         fetch(url, {
@@ -134,6 +132,8 @@ class FormComponent extends React.Component {
       email: "",
       age: "",
       mobileNumber: "",
+      location: "",
+      address: "",
     });
   }
   _fieldValidation() {
@@ -199,6 +199,52 @@ class FormComponent extends React.Component {
     }
     return true;
   }
+
+  _refreshLocation = () => {
+    var that = this;
+    if (Platform.OS === "ios") {
+      Geolocation.getCurrentPosition((position) => {
+        const currentLongitude = JSON.stringify(position.coords.longitude);
+        const currentLatitude = JSON.stringify(position.coords.latitude);
+        that.setState({
+          currentLongitude: currentLongitude,
+          currentLatitude: currentLatitude,
+        });
+        that._generateLocation();
+      });
+    } else {
+      async function requestLocationPermission() {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: "Location Access Required",
+              message: "This App needs to Access your location",
+            }
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            Geolocation.getCurrentPosition((position) => {
+              const currentLongitude = JSON.stringify(
+                position.coords.longitude
+              );
+              const currentLatitude = JSON.stringify(position.coords.latitude);
+              that.setState({
+                currentLongitude: currentLongitude,
+                currentLatitude: currentLatitude,
+              });
+
+              that._generateLocation();
+            });
+          } else {
+            console.log("Permission Denied");
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      requestLocationPermission();
+    }
+  };
 
   render() {
     return (
@@ -344,6 +390,16 @@ class FormComponent extends React.Component {
               underlineColorAndroid="transparent"
               onChangeText={(text) => this.setState({ location: text })}
             />
+            <TouchableOpacity onPress={() => this._refreshLocation()}>
+              <Icon
+                reverse
+                name="refresh"
+                type="font-awesome"
+                style={styles.refreshIcon}
+                color="#517fa4"
+                size={14}
+              />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.inputContainer}>
@@ -420,7 +476,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 30,
     borderBottomWidth: 1,
-    width: width / 1.5,
+    width: width / 1.2,
     height: 45,
     marginBottom: 20,
     flexDirection: "row",
@@ -437,6 +493,7 @@ const styles = StyleSheet.create({
     height: 25,
     justifyContent: "center",
   },
+  refreshIcon: {},
   buttonContainer: {
     height: 45,
     flexDirection: "row",

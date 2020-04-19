@@ -25,48 +25,9 @@ class LoginComponent extends React.Component {
       userName: "",
       passWord: "",
       switchValue: true,
-      currentLongitude: 0,
-      currentLatitude: 0,
     };
   }
-  componentDidMount = () => {
-    var that = this;
-    if (Platform.OS === "ios") {
-      Geolocation.watchPosition((position) => {
-        const currentLongitude = JSON.stringify(position.coords.longitude);
-        const currentLatitude = JSON.stringify(position.coords.latitude);
-        that.setState({ currentLongitude: currentLongitude });
-        that.setState({ currentLatitude: currentLatitude });
-      });
-    } else {
-      async function requestLocationPermission() {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: "Location Access Required",
-              message: "This App needs to Access your location",
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            Geolocation.watchPosition((position) => {
-              const currentLongitude = JSON.stringify(
-                position.coords.longitude
-              );
-              const currentLatitude = JSON.stringify(position.coords.latitude);
-              that.setState({ currentLongitude: currentLongitude });
-              that.setState({ currentLatitude: currentLatitude });
-            });
-          } else {
-            console.log("Permission Denied");
-          }
-        } catch (err) {
-          console.log(err);
-        }
-      }
-      requestLocationPermission();
-    }
-  };
+
   _emailValidation() {
     var email = this.state.userName;
     var atPosition = email.indexOf("@");
@@ -90,8 +51,6 @@ class LoginComponent extends React.Component {
         payload: {
           loginStatus: true,
           emailId: this.state.userName,
-          latitude: this.state.currentLatitude,
-          longitude: this.state.currentLongitude,
         },
       });
       this.props.navigation.dispatch(
