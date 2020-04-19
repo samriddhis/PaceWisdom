@@ -38,17 +38,17 @@ class FormComponent extends React.Component {
       address: "",
       showLoadMask: false,
       imageUrl: "http://getdrawings.com/free-icon/blank-avatar-icon-75.png",
-      currentLongitude: props.loginDetails.longitude,
       currentLatitude: props.loginDetails.latitude,
+      currentLongitude: props.loginDetails.longitude,
     };
     navVar = this.props.navigation;
   }
 
   componentDidMount() {
-    //this.generateLocation();
+    this._generateLocation();
   }
 
-  generateLocation = async function() {
+  _generateLocation = async function() {
     var lati = this.state.currentLatitude;
     var longi = this.state.currentLongitude;
     var latlng = longi + "," + lati;
@@ -57,13 +57,13 @@ class FormComponent extends React.Component {
       latlng +
       ".json?access_token=pk.eyJ1IjoicmFrZWVyYWtlc2giLCJhIjoiY2phMHpvOGlsOGoydjMzb3JiNDd4dXRrYiJ9.f10Am4y4NC81Fn9jCBA0Tw";
     try {
-      var resp = await this.getCurrentLocation();
-      console.log("success of async" + resp);
+      var resp = await this._getCurrentLocation();
       this.setState({
-        address: resp.features[0].place_name,
+        address: resp.features[1].place_name,
         location:
           "lat:" +
           this.state.currentLatitude +
+          " " +
           "long:" +
           this.state.currentLongitude,
       });
@@ -72,7 +72,7 @@ class FormComponent extends React.Component {
     }
   };
 
-  getCurrentLocation = function() {
+  _getCurrentLocation = function() {
     return new Promise(function(resolve, reject) {
       try {
         fetch(url, {
@@ -93,7 +93,6 @@ class FormComponent extends React.Component {
 
   async _pressPictureUpload() {
     await ImagePicker.showImagePicker(options, (response) => {
-      // console.log("Response = ", response);
       if (response.didCancel) {
         console.log("User cancelled image picker");
       } else if (response.error) {
@@ -121,7 +120,6 @@ class FormComponent extends React.Component {
             resolve(true);
           })
           .catch((error) => {
-            console.log(error);
             reject(error);
           });
       } catch (error) {
@@ -167,7 +165,7 @@ class FormComponent extends React.Component {
               location: this.state.location,
               address: this.state.address,
               imageUrl: this.state.imageUrl,
-              currentLongitude: this.state.currentLatitude,
+              currentLongitude: this.state.currentLongitude,
               currentLatitude: this.state.currentLatitude,
             },
           });
@@ -184,6 +182,22 @@ class FormComponent extends React.Component {
     } else {
       Alert.alert("Warning", "Please enter details....");
     }
+  }
+
+  _emailValidation() {
+    var emailVal = this.state.email;
+    var atPosition = emailVal.indexOf("@");
+    var dotPosition = emailVal.lastIndexOf(".");
+
+    if (
+      atPosition < 1 ||
+      dotPosition < atPosition + 2 ||
+      dotPosition + 2 >= emailVal.length
+    ) {
+      alert("Please enter a valid e-mail address....");
+      return false;
+    }
+    return true;
   }
 
   render() {
@@ -266,6 +280,7 @@ class FormComponent extends React.Component {
               keyboardType="email-address"
               underlineColorAndroid="transparent"
               onChangeText={(text) => this.setState({ email: text })}
+              onBlur={() => this._emailValidation()}
             />
           </View>
 
@@ -350,10 +365,10 @@ class FormComponent extends React.Component {
           </View>
 
           <TouchableHighlight
-            style={[styles.buttonContainer, styles.signupButton]}
+            style={[styles.buttonContainer, styles.submitButton]}
             onPress={() => this.onSubmitListener()}
           >
-            <Text style={styles.signUpText}>Submit</Text>
+            <Text style={styles.submitText}>Submit</Text>
           </TouchableHighlight>
         </View>
       </View>
@@ -413,7 +428,7 @@ const styles = StyleSheet.create({
   },
   inputs: {
     height: 45,
-    marginLeft: 16,
+    marginLeft: 10,
     borderBottomColor: "#FFFFFF",
     flex: 1,
   },
@@ -431,10 +446,10 @@ const styles = StyleSheet.create({
     width: 250,
     borderRadius: 30,
   },
-  signupButton: {
+  submitButton: {
     backgroundColor: "#0966aa",
   },
-  signUpText: {
+  submitText: {
     color: "white",
   },
   modalBackground: {

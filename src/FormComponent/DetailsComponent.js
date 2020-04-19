@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
 import { Icon } from "react-native-elements";
 import HeaderComponent from "./HeaderComponent";
 const { width, height } = Dimensions.get("window");
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 export default class DetailsComponent extends React.Component {
   constructor(props) {
@@ -10,6 +11,24 @@ export default class DetailsComponent extends React.Component {
     this.state = {
       itemDetails: this.props.navigation.getParam("item"),
     };
+    this._setCurrentLocation();
+  }
+
+  _setCurrentLocation() {
+    (this.region = {
+      latitude: parseFloat(this.state.itemDetails.currentLatitude),
+      longitude: parseFloat(this.state.itemDetails.currentLongitude),
+      latitudeDelta: 0.0043,
+      longitudeDelta: 0.0034,
+    }),
+      (this.marker = {
+        title: this.state.itemDetails.address,
+        address: this.state.itemDetails.address,
+        coOrd: {
+          latitude: parseFloat(this.state.itemDetails.currentLatitude),
+          longitude: parseFloat(this.state.itemDetails.currentLongitude),
+        },
+      });
   }
 
   _backButtonPress() {
@@ -19,7 +38,7 @@ export default class DetailsComponent extends React.Component {
   render() {
     return (
       <View style={styles.OuterContainerStyle}>
-       <View style={[styles.headerStyle]}>
+        <View style={[styles.headerStyle]}>
           <Icon
             color="#fff"
             name="arrowleft"
@@ -42,25 +61,44 @@ export default class DetailsComponent extends React.Component {
               <Text style={styles.NameTxtStyle}>
                 Name:{this.state.itemDetails.firstName}
               </Text>
-              <Text style={styles.StyleTxtStyle}>
+              <Text style={styles.EmailTxtStyle}>
                 Email:{this.state.itemDetails.email}
               </Text>
-              <Text style={styles.SizeTxtStyle}>
+              <Text style={styles.AgeTxtStyle}>
                 Age :{this.state.itemDetails.age}
               </Text>
-              <Text style={styles.SizeTxtStyle}>
+              <Text style={styles.AgeTxtStyle}>
                 Number :{this.state.itemDetails.mobileNumber}
               </Text>
-              <Text style={styles.SizeTxtStyle}>
+              <Text style={styles.AgeTxtStyle}>
                 Location : {this.state.itemDetails.location}
               </Text>
-              <Text style={styles.SizeTxtStyle}>
+              <Text style={styles.AgeTxtStyle}>
                 Address :{this.state.itemDetails.address}
               </Text>
             </View>
           </View>
           <View style={styles.BottomContainerStyle}>
-            <Text style={styles.AboutTxtStyle}>About : </Text>
+            <Text style={styles.MapTxtStyle}>Map : </Text>
+            <MapView
+              ref={(map) => {
+                this.map = map;
+              }}
+              region={this.region}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+            >
+              <MapView.Marker
+                title={this.marker.title}
+                description={this.marker.address}
+                coordinate={this.marker.coOrd}
+              />
+            </MapView>
           </View>
         </View>
       </View>
@@ -81,12 +119,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: width,
     backgroundColor: "#0966aa",
-    elevation: 20
-  },
-  headerTextStyle: {
-    marginLeft: 10,
-    fontSize: 25,
-    color: "#fff"
+    elevation: 20,
   },
   DetailsContainerStyle: {
     flex: 1,
@@ -112,12 +145,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "gray",
   },
-  StyleTxtStyle: {
+  EmailTxtStyle: {
     fontSize: 16,
     fontWeight: "200",
     color: "darkgray",
   },
-  SizeTxtStyle: {
+  AgeTxtStyle: {
     fontSize: 16,
     fontWeight: "200",
     color: "#909090",
@@ -130,29 +163,9 @@ const styles = StyleSheet.create({
     flex: 0.7,
     margin: 15,
   },
-  AboutTxtStyle: {
+  MapTxtStyle: {
     fontSize: 20,
     fontWeight: "bold",
     color: "gray",
-  },
-  DescriptionTxtStyle: {
-    fontSize: 14,
-    color: "gray",
-  },
-  PlusIconViewStyle: {
-    paddingRight: 5,
-    paddingTop: 10,
-    flex: 1.7,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: 80,
-  },
-  countStyle: {
-    borderRadius: 20,
-    width: 20,
-    height: 20,
-    borderColor: "black",
-    borderWidth: 0.5,
-    textAlign: "center",
-  },
+  }
 });

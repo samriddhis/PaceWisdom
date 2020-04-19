@@ -18,8 +18,6 @@ import { connect } from "react-redux";
 const { height, width } = Dimensions.get("window");
 import Geolocation from "@react-native-community/geolocation";
 
-async function request_device_location_runtime_permission() {}
-
 class LoginComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -33,9 +31,13 @@ class LoginComponent extends React.Component {
   }
   componentDidMount = () => {
     var that = this;
-    //Checking for the permission just after component loaded
     if (Platform.OS === "ios") {
-      this.callLocation(that);
+      Geolocation.watchPosition((position) => {
+        const currentLongitude = JSON.stringify(position.coords.longitude);
+        const currentLatitude = JSON.stringify(position.coords.latitude);
+        that.setState({ currentLongitude: currentLongitude });
+        that.setState({ currentLatitude: currentLatitude });
+      });
     } else {
       async function requestLocationPermission() {
         try {
@@ -48,25 +50,18 @@ class LoginComponent extends React.Component {
           );
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             Geolocation.watchPosition((position) => {
-              //Will give you the location on location change
-              console.log(position);
               const currentLongitude = JSON.stringify(
                 position.coords.longitude
               );
-              //getting the Longitude from the location json
               const currentLatitude = JSON.stringify(position.coords.latitude);
-              //getting the Latitude from the location json
               that.setState({ currentLongitude: currentLongitude });
-              //Setting state Longitude to re re-render the Longitude Text
               that.setState({ currentLatitude: currentLatitude });
-              //Setting state Latitude to re re-render the Longitude Text
             });
           } else {
-            alert("Permission Denied");
+            console.log("Permission Denied");
           }
         } catch (err) {
-          alert("err", err);
-          console.warn(err);
+          console.log(err);
         }
       }
       requestLocationPermission();
@@ -95,8 +90,8 @@ class LoginComponent extends React.Component {
         payload: {
           loginStatus: true,
           emailId: this.state.userName,
-          latitude: "12.8375626",
-          longitude: "80.2302438",
+          latitude: this.state.currentLatitude,
+          longitude: this.state.currentLongitude,
         },
       });
       this.props.navigation.dispatch(
@@ -167,7 +162,7 @@ class LoginComponent extends React.Component {
               <TouchableOpacity
                 style={styles.buttonStyle}
                 color="#0966aa"
-                onPress={() => this._signupPress()}
+                onPress={() => this._loginPress()}
               >
                 <Text style={{ color: "#fff" }}>{"Sign up"}</Text>
               </TouchableOpacity>
